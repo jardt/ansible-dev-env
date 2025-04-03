@@ -1,0 +1,15 @@
+default_roles:
+  - btop
+  - kitty
+  - starship
+  - ghostty
+  - yazi
+  - bat
+  - eza
+  - neovim
+  - zsh
+  - tmux
+  - aerospace
+  - sketchybar
+  - jankyborders
+  - homebrew-packages

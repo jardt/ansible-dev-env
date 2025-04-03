@@ -1,0 +1,24 @@
+- name: "Install tmux on arch"
+  ansible.builtin.pacman:
+    name:
+      - tmux
+    state: present
+  become: true
+  when: ansible_distribution == "Archlinux"
+
+- name: "Install tmux on osx"
+  community.general.homebrew:
+    name: tmux
+    state: present
+  when: ansible_distribution == "MacOSX"
+
+- name: "Checking for tmux config in dotfiles folder"
+  ansible.builtin.stat:
+    path: "~/dotfiles/yazi/"
+  register: tmux_config
+
+- name: "Stowing tmux config"
+  ansible.builtin.shell: "cd ~/dotfiles && stow tmux --verbose=2 --no-folding -R"
+  register: result
+  changed_when: 'result.stderr is search("LINK: ")'
+  when: tmux_config.stat.exists

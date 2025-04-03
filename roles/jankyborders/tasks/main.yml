@@ -1,0 +1,22 @@
+- name: "Tap JankyBorders source for brew"
+  ansible.builtin.homebrew_tap:
+    name: FelixKratz/formulae
+    state: present
+  when: ansible_distribution == "MacOSX"
+
+- name: "Install JankyBorders sketchybar on osx"
+  community.general.homebrew:
+    name: borders
+    state: present
+  when: ansible_distribution == "MacOSX"
+
+- name: "Checking for JankyBorders config in dotfiles folder"
+  ansible.builtin.stat:
+    path: "~/dotfiles/borders/"
+  register: borders_config
+
+- name: "Stowing jankyBorders config"
+  ansible.builtin.shell: "cd ~/dotfiles && stow borders --verbose=2 --no-folding -R"
+  register: result
+  changed_when: 'result.stderr is search("LINK: ")'
+  when: borders_config.stat.exists

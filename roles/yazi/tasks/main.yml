@@ -1,0 +1,24 @@
+- name: "Install yazi on arch"
+  ansible.builtin.pacman:
+    name:
+      - yazi
+    state: present
+  become: true
+  when: ansible_distribution == "Archlinux"
+
+- name: "Install yazi on osx"
+  ansible.builtin.homebrew:
+    name: yazi
+    state: present
+  when: ansible_distribution == "MacOSX"
+
+- name: "Checking for yazi config in dotfiles folder"
+  ansible.builtin.stat:
+    path: "~/dotfiles/yazi/"
+  register: yazi_config
+
+- name: "Stowing yazi config"
+  ansible.builtin.shell: "cd ~/dotfiles && stow yazi --verbose=2 --no-folding -R"
+  register: result
+  changed_when: 'result.stderr is search("LINK: ")'
+  when: yazi_config.stat.exists

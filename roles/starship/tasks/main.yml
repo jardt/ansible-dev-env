@@ -1,0 +1,24 @@
+- name: "Install starship on arch"
+  ansible.builtin.pacman:
+    name:
+      - starship
+    state: present
+  become: true
+  when: ansible_distribution == "Archlinux"
+
+- name: "Install starship on osx"
+  community.general.homebrew:
+    name: starship
+    state: present
+  when: ansible_distribution == "MacOSX"
+
+- name: "Checking for starship config in dotfiles folder"
+  ansible.builtin.stat:
+    path: "~/dotfiles/starship/"
+  register: starship_config
+
+- name: "Stowing starship config"
+  ansible.builtin.shell: "cd ~/dotfiles && stow starship --verbose=2 --no-folding -R"
+  register: result
+  changed_when: 'result.stderr is search("LINK: ")'
+  when: starship_config.stat.exists

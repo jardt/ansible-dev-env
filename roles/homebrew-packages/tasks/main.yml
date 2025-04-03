@@ -1,0 +1,33 @@
+- name: "Install packages on osx using brew"
+  community.general.homebrew:
+    name:
+      - wget
+      - cloc
+      - cmake
+      - fd
+      - ffmpeg
+      - flac
+      - fzf
+      - gh
+      - go
+      - lazygit
+      - make
+      - mpv
+      - ncurses
+      - ripgrep
+      - sqlite
+      - zoxide
+      - yt-dlp
+      - rainfrog
+    state: present
+  when: ansible_distribution == "MacOSX"
+
+- name: "Install packages on osx using brew cask"
+  ansible.builtin.homebrew_cask:
+    name:
+      - font-caskaydia-cove-nerd-font
+      - font-hack-nerd-font
+      - font-monaspace
+      - google-chrome
+    state: present
+  when: ansible_distribution == "MacOSX"

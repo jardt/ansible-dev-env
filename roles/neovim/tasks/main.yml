@@ -1,0 +1,24 @@
+- name: "Install neovim on arch"
+  ansible.builtin.pacman:
+    name:
+      - neovim
+    state: present
+  become: true
+  when: ansible_distribution == "Archlinux"
+
+- name: "Install neovim on osx"
+  community.general.homebrew:
+    name: neovim
+    state: present
+  when: ansible_distribution == "MacOSX"
+
+- name: "Checking for neovim config in dotfiles folder"
+  ansible.builtin.stat:
+    path: "~/dotfiles/neovim/"
+  register: neovim_config
+
+- name: "Stowing neovim config"
+  ansible.builtin.shell: "cd ~/dotfiles && stow neovim --verbose=2 --no-folding -R"
+  register: result
+  changed_when: 'result.stderr is search("LINK: ")'
+  when: neovim_config.stat.exists

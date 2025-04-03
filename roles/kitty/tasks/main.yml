@@ -1,0 +1,24 @@
+- name: "Install kitty on arch"
+  ansible.builtin.pacman:
+    name:
+      - kitty
+    state: present
+  become: true
+  when: ansible_distribution == "Archlinux"
+
+- name: "Install kitty on osx"
+  community.general.homebrew_cask:
+    name: kitty
+    state: present
+  when: ansible_distribution == "MacOSX"
+
+- name: "Checking for kitty config in dotfiles folder"
+  ansible.builtin.stat:
+    path: "~/dotfiles/kitty/"
+  register: kitty_config
+
+- name: "Stowing kitty config"
+  ansible.builtin.shell: "cd ~/dotfiles && stow kitty --verbose=2 --no-folding -R"
+  register: result
+  changed_when: 'result.stderr is search("LINK: ")'
+  when: kitty_config.stat.exists

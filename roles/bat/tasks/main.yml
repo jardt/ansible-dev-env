@@ -1,0 +1,24 @@
+- name: "Install bat on arch"
+  ansible.builtin.pacman:
+    name:
+      - bat
+    state: present
+  become: true
+  when: ansible_distribution == "Archlinux"
+
+- name: "Install bat on osx"
+  community.general.homebrew:
+    name: bat
+    state: present
+  when: ansible_distribution == "MacOSX"
+
+- name: "Checking for bat config in dotfiles folder"
+  ansible.builtin.stat:
+    path: "~/dotfiles/bat/"
+  register: bat_config
+
+- name: "Stowing bat config"
+  ansible.builtin.shell: "cd ~/dotfiles && stow bat --verbose=2 --no-folding -R"
+  register: result
+  changed_when: 'result.stderr is search("LINK: ")'
+  when: bat_config.stat.exists

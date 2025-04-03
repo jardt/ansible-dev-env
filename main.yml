@@ -1,0 +1,43 @@
+- name: Bootstrap development environment
+  hosts: localhost
+  connection: local
+  vars:
+    galaxy_collections:
+      - name: "community.general"
+        # _xdg_desktop: "{{ ansible_facts['env']['XDG_CURRENT_DESKTOP'] | default('') }}"
+        # _distro: "{{ ansible_facts['distribution'] }}"
+        # host_vars_yml: "host_vars/{{ ansible_facts['hostname'] }}.yml"
+        # host_vars_globals:
+        #   homebrew_prefix:
+        #     Linux: "/home/linuxbrew/.linuxbrew"
+        #     Darwin: "/opt/homebrew"
+        #   email: "{{ ansible_facts['user_id'] }}@{{ ansible_facts['hostname'] }}"
+        #   is_desktop: "{{ _xdg_session_type != 'tty' or _distro == 'MacOSX' }}"
+        #   desktop_environment: "{{ _xdg_desktop | lower }}"
+  tasks:
+    - name: "Install Ansible Galaxy requirements"
+      community.general.ansible_galaxy_install:
+        name: "{{ item['name'] }}"
+        type: "{{ item['type'] | default('collection') }}"
+        force: false
+      loop: "{{ galaxy_collections }}"
+
+    - name: Clone dotfile repository
+      ansible.builtin.git:
+        repo: https://github.com/jardt/dotfiles
+        dest: ~/dotfiles_ansible
+
+    - name: Set roles
+      ansible.builtin.set_fact:
+        run_roles: "{{ ansible_run_tags != ['all'] and ansible_run_tags or default_roles | difference(exclude_roles | default([])) | sort }}"
+
+    - name: Run roles
+      ansible.builtin.include_role:
+        apply:
+          tags:
+            - "{{ roles_item }}"
+        name: "{{ roles_item }}"
+      loop_control:
+        loop_var: roles_item
+      with_items: "{{ run_roles }}"
+

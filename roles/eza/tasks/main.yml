@@ -1,0 +1,26 @@
+- name: "Install eza on arch"
+  ansible.builtin.pacman:
+    name:
+      - eza
+    state: present
+  become: true
+  when: ansible_distribution == "Archlinux"
+
+- name: "Install eza on osx"
+  community.general.homebrew:
+    name: eza
+    state: present
+  when: ansible_distribution == "MacOSX"
+
+- name: "Create completions dir for eza"
+  ansible.builtin.file:
+    path: ~/.zsh_completions
+    state: directory
+    mode: '0755'
+
+- name: "Clone eza completions repository"
+  ansible.builtin.git:
+    repo: https://github.com/eza-community/eza.git
+    dest: ~/.zsh_completions/eza
+    single_branch: true
+    version: main

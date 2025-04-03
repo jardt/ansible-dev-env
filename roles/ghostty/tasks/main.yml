@@ -1,0 +1,24 @@
+- name: "Install kitty on arch"
+  ansible.builtin.pacman:
+    name:
+      - ghostty
+    state: present
+  become: true
+  when: ansible_distribution == "Archlinux"
+
+- name: "Install ghostty on osx"
+  community.general.homebrew_cask:
+    name: ghostty
+    state: present
+  when: ansible_distribution == "MacOSX"
+
+- name: "Checking for ghostty config in dotfiles folder"
+  ansible.builtin.stat:
+    path: "~/dotfiles/ghostty/"
+  register: ghostty_config
+
+- name: "Stowing ghostty config"
+  ansible.builtin.shell: "cd ~/dotfiles && stow ghostty --verbose=2 --no-folding -R"
+  register: result
+  changed_when: 'result.stderr is search("LINK: ")'
+  when: ghostty_config.stat.exists

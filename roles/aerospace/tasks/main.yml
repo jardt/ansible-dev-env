@@ -1,0 +1,22 @@
+- name: "Tap aerospace source for brew"
+  ansible.builtin.homebrew_tap:
+    name: nikitabobko/tap
+    state: present
+  when: ansible_distribution == "MacOSX"
+
+- name: "Install aerospace on osx"
+  community.general.homebrew_cask:
+    name: aerospace
+    state: present
+  when: ansible_distribution == "MacOSX"
+
+- name: "Checking for aerospace config in dotfiles folder"
+  ansible.builtin.stat:
+    path: "~/dotfiles/aerospace/"
+  register: aerospace_config
+
+- name: "Stowing aerospace config"
+  ansible.builtin.shell: "cd ~/dotfiles && stow aerospace --verbose=2 --no-folding -R"
+  register: result
+  changed_when: 'result.stderr is search("LINK: ")'
+  when: aerospace_config.stat.exists

@@ -1,0 +1,22 @@
+- name: "Tap sketchybar source for brew"
+  ansible.builtin.homebrew_tap:
+    name: FelixKratz/formulae
+    state: present
+  when: ansible_distribution == "MacOSX"
+
+- name: "Install sketchybar on osx"
+  community.general.homebrew:
+    name: sketchybar
+    state: present
+  when: ansible_distribution == "MacOSX"
+
+- name: "Checking for sketchybar config in dotfiles folder"
+  ansible.builtin.stat:
+    path: "~/dotfiles/sketchybar/"
+  register: sketchybar_config
+
+- name: "Stowing sketchybar config"
+  ansible.builtin.shell: "cd ~/dotfiles && stow sketchybar --verbose=2 --no-folding -R"
+  register: result
+  changed_when: 'result.stderr is search("LINK: ")'
+  when: sketchybar_config.stat.exists
