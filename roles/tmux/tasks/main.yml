@@ -22,3 +22,8 @@
   register: result
   changed_when: 'result.stderr is search("LINK: ")'
   when: tmux_config.stat.exists
+
+- name: Setting terminfo tmux color 256
+  ansible.builtin.shell: "tic -x ~/.terminfo_tmux_color256"
+  when: ansible_distribution = "MacOSX"
+  changed_when: true

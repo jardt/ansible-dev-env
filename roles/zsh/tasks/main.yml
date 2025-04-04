@@ -34,8 +34,6 @@
 - name: "Install zsh packages on osx"
   community.general.homebrew:
     name:
-      - zsh-vi-mode
-      - zsh-history-substring-search
       - zplug
     state: present
   when: ansible_distribution == "MacOSX"

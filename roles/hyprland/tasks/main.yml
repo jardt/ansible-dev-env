@@ -1,0 +1,20 @@
+- name: "Checking for hyprland config in dotfiles folder"
+  ansible.builtin.stat:
+    path: "~/dotfiles/hyprland/"
+  register: hypr_config
+
+- name: "Stowing hyprland config"
+  ansible.builtin.shell: "cd ~/dotfiles && stow hyprland --verbose=2 --no-folding -R"
+  register: result
+  changed_when: 'result.stderr is search("LINK: ")'
+  when: hypr_config.stat.exists
+
+- name: "Install hyprland packages on arch"
+  ansible.builtin.pacman:
+    name:
+      - hyprland
+      - hyprpaper
+      - wofi
+    state: present
+  become: true
+  when: ansible_distribution == "Archlinux"

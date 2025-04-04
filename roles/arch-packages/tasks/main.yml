@@ -1,0 +1,13 @@
+- name: "Install base packages on arch"
+  ansible.builtin.pacman:
+    name:
+      - vim
+      - fzf
+      - firefox
+      - wget
+      - npm
+      - rustup
+      - go
+    state: present
+  become: true
+  when: ansible_distribution == "Archlinux"
