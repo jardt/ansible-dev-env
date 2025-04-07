@@ -12,4 +12,4 @@ default_roles:
   - aerospace
   - sketchybar
   - jankyborders
-  - homebrew-packages
+  - lazygit

@@ -25,5 +25,27 @@
 
 - name: Setting terminfo tmux color 256
   ansible.builtin.shell: "tic -x ~/.terminfo_tmux_color256"
-  when: ansible_distribution = "MacOSX"
+  when: ansible_distribution == "MacOSX"
+  changed_when: true
+
+- name: Checking for catppuccin folder
+  ansible.builtin.stat:
+    path: "~/.config/tmux/plugins/catppuccin"
+  register: catppuccin_config
+
+- name: Making dir for catppuccin config
+  ansible.builtin.shell: "mkdir -p ~/.config/tmux/plugins/catppuccin"
+  when: not catppuccin_config.stat.exists
+  changed_when: true
+
+- name: Cloning catppuccin dir into config dir
+  ansible.builtin.git:
+    repo: https://github.com/catppuccin/tmux.git
+    dest: ~/.config/tmux/plugins/catppuccin/tmux
+    single_branch: true
+    version: main
+
+- name: Copying cyberdream config into catppuccin folder
+  ansible.builtin.shell: "cp ~/.config/tmux/cyberdream.conf ~/.config/tmux/plugins/catppuccin/tmux/themes/catppuccin_cyberdream_tmux.conf"
+  when: not catppuccin_config.stat.exists
   changed_when: true

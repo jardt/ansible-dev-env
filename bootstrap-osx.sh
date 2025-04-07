@@ -11,4 +11,5 @@ brew list ansible || brew install ansible
 echo "installing stow"
 brew list stow || brew install stow
 
+ansible-playbook main.yml
 

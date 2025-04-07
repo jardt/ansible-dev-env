@@ -1,16 +1,14 @@
 #!/bin/bash
 
-#TODO:
 
-if ! [ -x "$(command -v brew)" ]; then
-echo "brew command not found.. installing homebrew"
-curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh
+if ! [ -x "$(command -v ansible)" ]; then
+    echo "installing ansible"
+    sudo pacman -S ansible
 fi
 
-echo "installing ansible"
-brew list ansible || brew install ansible
+if ! [ -x "$(command -v stow)" ]; then
+    echo "installing stow"
+    sudo pacman -S stow
+fi
 
-echo "installing stow"
-brew list stow || brew install stow
-
-
+ansible-playbook main.yml

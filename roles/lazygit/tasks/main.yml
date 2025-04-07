@@ -1,0 +1,24 @@
+- name: "Install lazygit on arch"
+  ansible.builtin.pacman:
+    name:
+      - lazygit
+    state: present
+  become: true
+  when: ansible_distribution == "Archlinux"
+
+- name: "Install lazygit on osx"
+  ansible.builtin.homebrew:
+    name: lazygit
+    state: present
+  when: ansible_distribution == "MacOSX"
+
+- name: "Checking for lazygit config in dotfiles folder"
+  ansible.builtin.stat:
+    path: "~/dotfiles/lazygit/"
+  register: lg_config
+
+- name: "Stowing lazygit config"
+  ansible.builtin.shell: "cd ~/dotfiles && stow lazygit --verbose=2 --no-folding -R"
+  register: result
+  changed_when: 'result.stderr is search("LINK: ")'
+  when: lg_config.stat.exists

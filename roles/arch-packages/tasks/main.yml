@@ -1,6 +1,7 @@
 - name: "Install base packages on arch"
   ansible.builtin.pacman:
     name:
+      - vi
       - vim
       - fzf
       - firefox
