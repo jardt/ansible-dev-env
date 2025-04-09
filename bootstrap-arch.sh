@@ -1,5 +1,11 @@
 #!/bin/bash
 
+sudo pacman -S --needed base-devel
+
+if ! [ -x "$(command -v git)" ]; then
+    echo "installing git"
+    sudo pacman -S git
+fi
 
 if ! [ -x "$(command -v ansible)" ]; then
     echo "installing ansible"
@@ -11,4 +17,7 @@ if ! [ -x "$(command -v stow)" ]; then
     sudo pacman -S stow
 fi
 
-ansible-playbook main.yml
+
+cd ~/ansible-dev-env/
+
+ansible-playbook main.yml -K

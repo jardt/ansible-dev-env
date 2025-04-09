@@ -4,6 +4,7 @@
   vars:
     galaxy_collections:
       - name: "community.general"
+      - name: "kewlfft.aur"
         # _xdg_desktop: "{{ ansible_facts['env']['XDG_CURRENT_DESKTOP'] | default('') }}"
         # _distro: "{{ ansible_facts['distribution'] }}"
         # host_vars_yml: "host_vars/{{ ansible_facts['hostname'] }}.yml"
@@ -22,10 +23,16 @@
         force: false
       loop: "{{ galaxy_collections }}"
 
+    - name: Checking for dotfiles folder
+      ansible.builtin.stat:
+        path: "~/dotfiles/"
+      register: dotfiles_folder
+
     - name: Clone dotfile repository
       ansible.builtin.git:
         repo: https://github.com/jardt/dotfiles
-        dest: ~/dotfiles_ansible
+        dest: ~/dotfiles
+      when: not dotfiles_folder.stat.exists
 
     - name: Set roles
       ansible.builtin.set_fact:

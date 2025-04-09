@@ -19,4 +19,4 @@
   ansible.builtin.shell: "cd ~/dotfiles && stow aerospace --verbose=2 --no-folding -R"
   register: result
   changed_when: 'result.stderr is search("LINK: ")'
-  when: aerospace_config.stat.exists
+  when: aerospace_config.stat.exists and ansible_distribution == "MacOSX"

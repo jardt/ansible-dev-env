@@ -7,8 +7,51 @@
       - firefox
       - wget
       - npm
+      - yarn
       - rustup
       - go
+      - unzip
+      - otf-monaspace
+      - ttf-monaspace-variable
+      - openssh
+      - pipewire
+      - wireplumber
+      - github-cli
+      - bemenu
+      - wl-clipboard
     state: present
   become: true
-  when: ansible_distribution == "Archlinux"
+
+- name: Rustup install toolchan
+  ansible.builtin.command: rustup default stable
+  changed_when: true
+
+- name: Clone paru repo
+  ansible.builtin.git:
+    repo: https://aur.archlinux.org/paru.git
+    dest: ~/paru
+    single_branch: true
+    version: master
+
+- name: Check if puru command is present
+  ansible.builtin.shell: |
+    if ! [ -x "$(command -v paru)" ]; then
+      exit 1
+    fi
+    exit 0
+  register: rc_exist
+  changed_when: true
+
+- name: Installing paru
+  ansible.builtin.shell: |
+    cd ~/paru
+    makepkg -si && exit 0
+  register: rc
+  changed_when: rc == 0
+  when: rc_exist == 0
+
+- name: Installing aur packages
+  kewlfft.aur.aur:
+    use: paru
+    name:
+      - tofi
